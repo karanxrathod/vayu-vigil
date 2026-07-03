@@ -18,7 +18,23 @@ const app: Express = express();
 app.use(helmet({
   crossOriginResourcePolicy: false // allow serving static photos cross-origin
 }));
-app.use(cors());
+app.use(cors({
+  origin: (origin, callback) => {
+    const allowed = [
+      'http://localhost:3000',
+      'http://localhost:3001',
+      /\.vercel\.app$/,
+      /\.run\.app$/,
+      /vayu-vigil/
+    ];
+    if (!origin || allowed.some(p => typeof p === 'string' ? p === origin : p.test(origin))) {
+      callback(null, true);
+    } else {
+      callback(null, true); // Open during hackathon demo — restrict post-launch
+    }
+  },
+  credentials: true
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));

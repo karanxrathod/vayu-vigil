@@ -5,7 +5,7 @@ import fs from 'fs';
 import crypto from 'crypto';
 import { query, execute } from '../db';
 import { optionalAuth, authenticate, authorizeRoles, getEnforcedWardId } from '../middleware/auth';
-import { classifyImage } from '../services/ai.service';
+import { classifyImage, transcribeAudioNote, translateToEnglish } from '../services/ai.service';
 import { runScoringJob } from '../services/scoring.service';
 
 const router = Router();
@@ -96,9 +96,31 @@ router.post(
         is_mock: true
       };
 
+      // Transcribe voice note via Gemini multimodal audio (if provided)
+      let voiceTranscript: string | null = null;
+      if (voiceFile) {
+        const audioBuffer = fs.readFileSync(voiceFile.path);
+        const transcription = await transcribeAudioNote(audioBuffer, voiceFile.mimetype, language);
+        voiceTranscript = transcription.transcript;
+        console.log(`[Report] Voice note transcribed (mock=${transcription.is_mock}): "${voiceTranscript?.slice(0, 80)}"`);
+      }
+
+      // Translate description to English if non-English (for officer dashboard readability)
+      let descriptionEn = description;
+      if (language !== 'en' && description && description.trim().length > 3) {
+        const translation = await translateToEnglish(description, language);
+        descriptionEn = translation.translated_text;
+        console.log(`[Report] Translated [${language}→en]: "${descriptionEn.slice(0, 80)}"`);
+      }
+
+      // Combine transcript into description if voice-only report
+      const combinedDescription = voiceTranscript
+        ? `${descriptionEn} [Voice: ${voiceTranscript}]`.trim()
+        : descriptionEn;
+
       if (photoFile) {
         const buffer = fs.readFileSync(photoFile.path);
-        aiResult = await classifyImage(buffer, photoFile.originalname, photoFile.mimetype, description);
+        aiResult = await classifyImage(buffer, photoFile.originalname, photoFile.mimetype, combinedDescription);
       }
 
       const id = crypto.randomUUID();
@@ -117,7 +139,7 @@ router.post(
         [
           id, trackingId, userId, geoInfo.ward_id, geoInfo.city_id,
           aiResult.predicted_category || category,
-          aiResult.description_summary || description,
+          aiResult.description_summary || combinedDescription,
           language, photoUrl, voiceUrl, latitude, longitude,
           aiResult.predicted_category, aiResult.confidence,
           timestamp, timestamp
