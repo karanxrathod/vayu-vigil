@@ -1,3 +1,4 @@
+# Stage 1: Build TypeScript
 FROM node:20-alpine AS build
 WORKDIR /app
 COPY package*.json ./
@@ -5,15 +6,23 @@ RUN npm install
 COPY . .
 RUN npm run build
 
+# Stage 2: Production image
 FROM node:20-alpine AS production
 WORKDIR /app
+
+# Install production deps only
 COPY package*.json ./
 RUN npm install --only=production
-COPY --from=build /app/dist ./dist
-COPY --from=build /app/src ./src
 
+# Copy compiled output
+COPY --from=build /app/dist ./dist
+
+# Create uploads directory (persistent volume mount point for Cloud Run)
+RUN mkdir -p /app/uploads
+
+# Cloud Run uses PORT env variable — default 8080
+ENV PORT=8080
 ENV NODE_ENV=production
-ENV PORT=3001
-EXPOSE 3001
+EXPOSE 8080
 
 CMD ["node", "dist/index.js"]
