@@ -31,10 +31,11 @@ export default function LandingPage() {
     const fetchTeaserData = async () => {
       try {
         const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-        const res = await fetch(`${apiUrl}/api/hotspots`);
+        const res = await fetch(`${apiUrl}/api/v1/hotspots`);
         if (res.ok) {
           const data = await res.json();
-          setHotspots(data.slice(0, 6)); // Show top 6 hotspots
+          const list = Array.isArray(data) ? data : (data.hotspots || []);
+          setHotspots(list.slice(0, 6)); // Show top 6 hotspots
         }
       } catch (err) {
         console.warn('Could not load teaser hotspots, using fallback demo data');

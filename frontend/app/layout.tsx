@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { ToastContainer } from '../components/Toast';
+import { ErrorBoundary } from '../components/ErrorBoundary';
 
 export const metadata: Metadata = {
   title: 'Vayu Vigil | National Civic-Tech Platform for Neighborhood Air Quality',
@@ -30,7 +31,9 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
       </head>
       <body className="min-h-screen flex flex-col bg-[#F7F8FA] text-[#1C1F26]">
-        {children}
+        <ErrorBoundary>
+          {children}
+        </ErrorBoundary>
         <ToastContainer />
       </body>
     </html>

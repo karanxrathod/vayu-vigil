@@ -32,17 +32,17 @@ export default function OfficerDashboard() {
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
       const [hRes, rRes] = await Promise.all([
-        fetch(`${apiUrl}/api/hotspots?timeWindow=${timeWindow}`),
+        fetch(`${apiUrl}/api/v1/hotspots?timeWindow=${timeWindow}`),
         fetch(`${apiUrl}/api/v1/reports?timeWindow=${timeWindow}`)
       ]);
 
       if (hRes.ok) {
         const hData = await hRes.json();
-        setHotspots(hData);
+        setHotspots(Array.isArray(hData) ? hData : (hData.hotspots || []));
       }
       if (rRes.ok) {
         const rData = await rRes.json();
-        setReports(rData);
+        setReports(Array.isArray(rData) ? rData : (rData.reports || []));
       }
     } catch (err) {
       console.warn('Error fetching municipal data, using hackathon fallback:', err);
