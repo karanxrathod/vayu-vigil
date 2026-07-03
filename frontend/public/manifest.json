@@ -1,0 +1,21 @@
+{
+  "name": "Vayu Vigil - National Civic-Tech Platform for Neighborhood Air Quality",
+  "short_name": "Vayu Vigil",
+  "description": "Hyper-local neighborhood air quality monitoring, citizen reporting, satellite analysis, and automated municipal fleet dispatch.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0d9488",
+  "icons": [
+    {
+      "src": "/assets/vayu-vigil-logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/vayu-vigil-logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

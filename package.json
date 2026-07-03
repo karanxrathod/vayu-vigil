@@ -1,0 +1,16 @@
+{
+  "name": "vayu-vigil",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Vayu Vigil - National Civic-Tech Platform for Neighborhood Air Quality (Google Cloud x Hack2skill)",
+  "scripts": {
+    "dev": "node node_modules/concurrently/dist/bin/concurrently.js \"npm --prefix backend run dev\" \"npm --prefix frontend run dev\"",
+    "build": "npm --prefix backend run build && npm --prefix frontend run build",
+    "seed": "npm --prefix backend run seed",
+    "test": "npm --prefix backend test",
+    "start": "node node_modules/concurrently/dist/bin/concurrently.js \"npm --prefix backend start\" \"npm --prefix frontend start\""
+  },
+  "dependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

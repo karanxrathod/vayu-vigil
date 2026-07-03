@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.backend
+    container_name: vayu-vigil-backend
+    restart: always
+    ports:
+      - "3001:3001"
+    environment:
+      - PORT=3001
+      - DATABASE_URL=sqlite://./data/vayu_vigil.db
+      - JWT_SECRET=hackathon-super-secret-jwt-key-change-in-prod-2026
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - SIMULATOR_INTERVAL_MS=10000
+      - SCORING_INTERVAL_MS=30000
+    volumes:
+      - vayu-vigil-db-data:/app/data
+      - vayu-vigil-uploads:/app/uploads
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.frontend
+    container_name: vayu-vigil-frontend
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - NEXT_PUBLIC_API_URL=http://localhost:3001
+    depends_on:
+      - backend
+
+volumes:
+  vayu-vigil-db-data:
+  vayu-vigil-uploads:
