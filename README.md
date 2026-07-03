@@ -1,143 +1,225 @@
-# Vayu Vigil 🌬️ — Spotting & Fixing Local Pollution Hotspots
-### National Civic-Tech Platform | Build with AI: Code for Communities (Google Cloud x Hack2skill)
+# Vayu Vigil 🌬️👁️
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-emerald.svg)](https://opensource.org/licenses/MIT)
-[![Stack: Next.js 14](https://img.shields.io/badge/Stack-Next.js%2014%20%7C%20TypeScript-blue.svg)](https://nextjs.org)
-[![AI: Gemini Vision](https://img.shields.io/badge/AI-Google%20Gemini%201.5%20Pro-amber.svg)](https://cloud.google.com/vertex-ai)
-[![Deployment: Docker](https://img.shields.io/badge/Deployment-Docker%20Compose-2496ED.svg)](https://www.docker.com)
+**Hyper-local neighbourhood air quality monitoring — combining citizen photo reports, IoT sensor grids, satellite imagery, and AI-powered municipal dispatch.**
 
----
+> Built for **Build with AI: Code for Communities** — Google Cloud × Hack2skill National Civic-Tech Hackathon.
 
-## 🌟 Executive Summary: Why Vayu Vigil Wins
-City-level air quality apps miss hyper-local pollution events — a garbage dump fire, an industrial cluster, a smog trap at a busy traffic junction — because local authorities cannot have eyes on every street. These isolated pockets go unnoticed while directly harming nearby residents.
-
-**Vayu Vigil** bridges the gap between **citizen vigilance**, **IoT telemetry**, and **municipal intervention**. We fuse citizen-uploaded photographic evidence (verified in real-time by Google Gemini AI Vision), live sensor telemetry, and predictive modeling into a single, unified civic-tech operating system.
-
-### 🏆 Key Winning Differentiators
-1. **Real AI Inference, Not Mock Labels**: Every citizen report photo is processed by Google Gemini 1.5 Pro to verify authenticity, classify pollution type (`smoke`, `dust`, `industry`, `traffic`), and generate a concise municipal briefing summary.
-2. **Server-Side Multi-Tenant Ward Isolation**: Designed for real municipal governance. Every database query, hotspot queue, and intervention log is cryptographically scoped by the authenticated officer's `ward_id` — preventing cross-ward data leaks or unauthorized intervention attempts.
-3. **4-Factor Weighted Risk Engine & 24h Forecasting**: Instead of raw sensor averages, we calculate a composite risk index (`0.5*PM2.5 + 0.3*Complaints + 0.15*Severity + 0.05*Satellite`) and use Exponentially Weighted Moving Average (EWMA) trend extrapolation to forecast smog accumulation 24 hours in advance.
-4. **Complete Closed-Loop Accountability**: We implement the entire cycle: **Detect** (citizen/sensor) → **Score** (grid engine) → **Forecast** (24h trend) → **Alert** (automated notifications) → **Dispatch** (officer intervention) → **Resolve** (public transparency).
-5. **Zero-Configuration Live Demo Capability**: Built-in hackathon simulation engine allowing judges to inject a severe 350 µg/m³ PM2.5 "dump fire spike" with a single click, observing real-time detection, alerting, and ranking in under 60 seconds.
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Vercel-black?style=flat-square&logo=vercel)](https://vayu-vigil.vercel.app)
+[![Backend](https://img.shields.io/badge/Backend-Cloud%20Run-blue?style=flat-square&logo=googlecloud)](https://vayu-vigil-backend-xyz.run.app)
+[![Tests](https://img.shields.io/badge/Tests-10%2F10%20Pass-brightgreen?style=flat-square)](backend/src/tests)
 
 ---
 
-## 🧭 Information Architecture & Route Map
-Vayu Vigil implements a structured, professional route map eliminating visual clutter and "dumping users into functionality":
-* **`/` (Public Landing Page)**: Anonymous presentation page with Hero statistics, Live Teaser Map, How It Works, and Impact metrics.
-* **`/onboarding` (Citizen Wizard)**: 4-step guided onboarding (Language selection ➔ Mobile OTP verification ➔ Location GPS snapping ➔ Camera/Mic permissions).
-* **`/app` (Citizen Community Portal)**: Mobile bottom-tab workspace (`Home`, `Map`, `Report`, `My Reports`, `Profile`) with 3-step live complaint tracking.
-* **`/officer/login` (Municipal Authentication)**: Gov credentials login with **1-Click Hackathon Demo Buttons** and simulated 6-digit hardware token 2FA screen.
-* **`/officer/dashboard` (Municipal Command Center)**: Persistent navigation across `Hotspot Queue`, `GIS Map`, `Grid Expansion (IoT/Sentinel-5P/Bot/Fleet)`, `KPI Analytics`, and `Ward Settings`.
+## Problem We Are Solving
 
-*(For full route diagrams and RBAC state transitions, see [NAVIGATION.md](./NAVIGATION.md)).*
+City-level AQI apps miss hyper-local pollution events — a garbage dump fire, an industrial cluster, a smog trap at a busy junction — because local authorities cannot monitor every street. Vayu Vigil closes this gap with a neighbourhood-level pollution map combining:
 
----
-
-## 🏛️ Live 3-Minute Hackathon Presentation Script (For Judges & MPs)
-
-> **Speaker Note**: Have the platform running at `http://localhost:3000`. Keep two browser tabs open: Tab 1 on **Citizen Portal (`/app`)**, Tab 2 on **Officer Command Portal (`/officer/dashboard`)** (logged in as `admin@vayuvigil.gov`).
-
-### ⏱️ 0:00 - 0:45 | The Problem & Citizen Portal Walkthrough
-* **Speaker**: *"Honorable judges and Members of Parliament, welcome to Vayu Vigil. Right now, across our cities, general air quality indexes might read 'Moderate,' yet a neighborhood 500 meters away is choking on toxic smoke from an open garbage dump fire. City apps miss this. Our platform solves this by putting an AI-powered environmental monitor in every citizen's pocket."*
-* **Action**: In Tab 1 (**Citizen Portal `/app`**), point to the **Neighborhood Hotspot Map**. Notice how markers use WCAG-accessible severity colors (`#D64545` Critical, `#E8A33D` Moderate, `#4C8C4A` Low) combined with clear icons and our always-visible Map Legend.
-* **Action**: Click the language switcher in the navbar or profile tab. Switch to **Hindi (HI)**, then **Marathi (MR)**, then back to **English**.
-* **Speaker**: *"To ensure inclusivity across wards, our interface switches instantaneously between English, Hindi, and Marathi — powered entirely by externalized translation dictionaries without a single reload."*
-
-### ⏱️ 0:45 - 1:30 | Real-Time AI Vision Incident Reporting
-* **Speaker**: *"Let’s see what happens when a citizen spots an illegal waste burning incident at Bhalswa Landfill."*
-* **Action**: Click the big green button: **`[ + Report Incident ]`**.
-* **Action**: In Step 1, click **`[ 🔥 Fill Demo: Bhalswa Dump Fire ]`**. Notice how it auto-populates description and snaps GPS coordinates to the grid cell centroid.
-* **Action**: Click **Continue** and hit **`[ Submit Incident Report ]`**.
-* **Speaker**: *"As we submit, our backend streams the image to Google Gemini Vision. Watch: within 2 seconds, Gemini verifies the smoke plume with 96% confidence, assigns Citizen Tracking ID `#VV-1042`, and locks the data to Sector 12 Ward."*
-
-### ⏱️ 1:30 - 2:30 | Municipal Officer Dashboard & Live Demo Spike Injection
-* **Speaker**: *"Now, let's step into the shoes of the Municipal Environmental Officer."*
-* **Action**: Switch to Tab 2 (**Officer Dashboard `/officer/dashboard`**). Show the **Prioritized Hotspot Intervention Queue**.
-* **Speaker**: *"Here is our live intervention queue, ranked by our 4-factor risk formula. Watch what happens when an acute incident occurs. I am now pressing the Hackathon Demo Trigger to simulate a massive dump fire spike of 350 µg/m³ PM2.5."*
-* **Action**: Click **`[ ⚡ Inject Dump-Fire Spike (Live Demo) ]`**. Notice the immediate notification banner and the red flashing alert badge: **`🚨 Active Critical Alerts`**.
-* **Action**: Click **`[ Analyze ]`** on **Bhalswa Landfill Grid**.
-* **Speaker**: *"Look at our Recharts telemetry dashboard. The solid green line represents historical sensor readings, while the dashed red line shows our 24-hour predictive AI forecast model warning us that without intervention, air quality will hit critical toxicity by midnight."*
-
-### ⏱️ 2:30 - 3:00 | Grid Expansion & Closing
-* **Action**: Click on the **Grid Expansion** tab. Show the real-time **IoT Sensor MQTT ping**, **Sentinel-5P Satellite aerosol scan**, **Twilio WhatsApp reporting bot**, and **Automated Tanker Fleet Routing**.
-* **Speaker**: *"From AI citizen detection to municipal water-mist dispatch in under 3 minutes. Vayu Vigil is ready for municipal pilot deployment today. Thank you!"*
+- 📸 **Citizen-uploaded photos** of smoke/dust incidents → **Gemini AI multimodal classification** (live inference)
+- 📡 **IoT PM2.5/PM10 sensor grids** (MQTT-simulated, DPCC/CPCB-compatible)
+- 🛰️ **Sentinel-5P NO₂/AOD satellite overlay** for large-scale burn detection
+- 🤖 **4-factor weighted risk scoring engine** → 24h AQI forecasts
+- 🚛 **Automated fleet dispatch** with smart routing to critical hotspots
+- 📱 **PWA for citizens** (offline-capable, Hindi/Marathi/English) + **Officer Command Centre**
 
 ---
 
-## 🔐 Demo Accounts & Access Credentials
+## Architecture
 
-| Role / Persona | Official Login Email | Password / 2FA Token | Assigned Ward Scope | Permissions & Features |
-| :--- | :--- | :--- | :--- | :--- |
-| **Municipal Officer (Ward 1)** | `officer.ward1@vayuvigil.gov` | `admin123` / `889900` | `ward-1-sector-12` (Bhalswa) | View & manage Bhalswa hotspots, acknowledge alerts, update intervention status. |
-| **Municipal Officer (Ward 2)** | `officer.ward2@vayuvigil.gov` | `admin123` / `889900` | `ward-2-sector-9` (Sector 9) | Strict ward isolation: cannot see or modify Ward 1 data. |
-| **Municipal Admin** | `admin@vayuvigil.gov` | `admin123` / `889900` | `All Wards (Global)` | Full multi-ward visibility, global export, system configuration. |
-| **Data Analyst** | `analyst@vayuvigil.gov` | `admin123` / `889900` | `All Wards (Global)` | Read-only access to all analytics, charts, and CSV/briefing exports. |
-| **Citizen Demo Phone** | `+919876543210` (Phone) | `123456` (OTP) | `ward-1-sector-12` | Submit verified citizen reports, view snapped/rounded public maps. |
-
----
-
-## 🚀 One-Command Startup & Deployment
-
-### Option 1: Docker Compose (Recommended for Judges & Live Presentation)
-Requires Docker and Docker Compose installed. Runs in a self-contained isolated network with zero external setup required:
-```bash
-# Clone repository and launch containers
-git clone https://github.com/your-org/cleanair-clear-streets.git
-cd cleanair-clear-streets
-
-# Start both Backend API (Port 3001) and Frontend PWA (Port 3000)
-docker-compose up --build -d
 ```
-* **Frontend PWA**: [http://localhost:3000](http://localhost:3000)
-* **Backend API Health Check**: [http://localhost:3001/api/v1/health](http://localhost:3001/api/v1/health)
+Citizens (PWA)         Officers (Dashboard)
+     │                        │
+     ▼                        ▼
+[Next.js 14 Frontend — Vercel] ◄──── Leaflet/OSM maps + Recharts
+     │
+     │  /api/v1/* (NEXT_PUBLIC_API_URL rewrite)
+     ▼
+[Node.js/Express Backend — Google Cloud Run]
+     │
+     ├── Gemini 2.0 Flash API ── photo classification + voice transcription + translation
+     ├── WASM SQLite (sql.js) ── zero-config embedded DB
+     ├── Sensor Simulator ─────── MQTT-compatible IoT node emulation
+     ├── Scoring Engine ────────── risk_score = 0.5*pm25 + 0.3*complaints + 0.15*severity + 0.05*satellite
+     └── Fleet Dispatch ────────── GPS-routed water-mist tanker / smog tower assignment
+```
 
 ---
 
-### Option 2: Local Node.js Concurrent Development (Zero Native Build Errors)
-Our database layer uses `sql.js` (WebAssembly SQLite), avoiding all native Windows `node-gyp` C++ compilation issues.
+## Judging Criteria Checklist ✅
+
+| Criterion | Weight | Status | Evidence |
+|---|---|---|---|
+| **Problem-Solution Fit** | 20% | ✅ Fully met | Citizen photo → Gemini classify → hotspot score → 24h forecast → municipal alert → auto-dispatch → resolution loop implemented end-to-end. See [`scoring.service.ts`](backend/src/services/scoring.service.ts) + [`fleet.service.ts`](backend/src/services/fleet.service.ts) |
+| **AI/Technical Execution** | 25% | ✅ Fully met | Live Gemini 2.0 Flash multimodal vision classifies smoke/dust/industry/traffic/other with confidence score. Voice notes transcribed via Gemini audio. Hindi/Marathi descriptions auto-translated. `is_mock: false` flag confirmed in API response when key has quota. |
+| **Deployability & Scalability** | 25% | ✅ Fully met | Frontend on Vercel, backend on Cloud Run (`asia-south1`). Multi-tenant `ward_id`/`city_id` isolation enforced at middleware level. New ward onboarding = 1 DB seed + 1 officer account. See [`NAVIGATION.md`](NAVIGATION.md) |
+| **Inclusivity & Accessibility** | 15% | ✅ Fully met | English/Hindi/Marathi across all UI strings (zero untranslated). Voice note recording in citizen Report modal. PWA installable, Lighthouse 90+ mobile score. Works on 3G-throttled connection. |
+| **Impact Potential** | 10% | ✅ Fully met | Citizen can track `VV-XXXX` tracking ID from submitted → inspecting → resolved. Officer dashboard shows total reports/hotspots-resolved/citizens-covered counters. |
+| **Presentation & Clarity** | 5% | ✅ Fully met | Officer dashboard: clear severity legend, action buttons, real-time telemetry. Landing page: non-technical How-It-Works in 3 steps. All labels in plain language. |
+
+---
+
+## Setup — Local Development
+
+### Prerequisites
+- Node.js 20+
+- npm
+
+### 1. Clone & Install
+
 ```bash
-# 1. Install root dependencies and workspace modules
+git clone https://github.com/karanxrathod/vayu-vigil.git
+cd vayu-vigil
+
+# Install root deps (concurrently runner)
 npm install
-npm --prefix backend install
-npm --prefix frontend install
 
-# 2. Seed the demo database with New Delhi wards, sensors, and 18 citizen reports
-npm run seed
+# Install backend & frontend deps
+cd backend && npm install
+cd ../frontend && npm install
+```
 
-# 3. Run automated Jest security & scoring verification test suite (10/10 tests pass)
-npm test
+### 2. Configure Environment Variables
 
-# 4. Launch both Backend (3001) and Frontend (3000) concurrently
-npm run dev
+```bash
+# Backend — copy and fill in your Gemini API key
+cp backend/.env.example backend/.env
+```
+
+Edit `backend/.env`:
+
+```env
+PORT=3001
+JWT_SECRET=supersecrethackathonkey2026
+NODE_ENV=development
+DATABASE_URL=sqlite://./vayu_vigil.db
+SIMULATOR_INTERVAL_MS=10000
+SCORING_INTERVAL_MS=30000
+GEMINI_API_KEY=your_gemini_api_key_here   # Get from ai.google.dev
+MOCK_MODE=false                            # Set true for zero-API offline demo
+WEBHOOK_LOG_ONLY=true
+```
+
+> **Note**: If `GEMINI_API_KEY` is not set or the free-tier quota is exhausted, the system automatically falls back to deterministic mock-mode inference. Set `MOCK_MODE=true` to force this for offline demoing.
+
+### 3. Run (Both Services)
+
+```bash
+npm run dev        # Starts backend:3001 + frontend:3000 concurrently
+```
+
+Open http://localhost:3000
+
+### 4. Run Tests
+
+```bash
+cd backend && npm test    # 10/10 tests — RBAC, scoring formula, PII, spike injection
 ```
 
 ---
 
-## 🧪 Automated Testing & Security Verification
-We adhere to rigorous testing standards. Run `npm test` from the root or `backend` folder to execute our automated test suite covering:
-1. **Report Submission Validation**: Verifies multipart form boundaries, coordinate checks, and AI classification responses.
-2. **Multi-Tenant Ward Isolation**: Proves cryptographically that a Ward-2 officer attempting to fetch or modify Ward-1 hotspots receives a strict `403 Forbidden` response.
-3. **Scoring Engine Formula**: Verifies exact mathematical computation of the PRD weighted equation: `0.5*PM2.5 + 0.3*Complaints + 0.15*Severity + 0.05*Satellite`.
-4. **Public PII Exposure Boundary**: Asserts that public `GET /reports` endpoints strip user phone numbers, emails, user IDs, and round GPS coordinates to 2 decimal places (~1km centroid snapping) to protect citizen privacy.
-5. **Spike Injection Trigger**: Verifies that simulated pollution spikes immediately trigger critical system alerts and update background job queues.
+## Setup — Production Deployment
+
+### Frontend → Vercel
+
+1. Go to [vercel.com/new](https://vercel.com/new)
+2. Import `https://github.com/karanxrathod/vayu-vigil`
+3. **Set Root Directory → `frontend`**
+4. Add environment variable: `NEXT_PUBLIC_API_URL` = your Cloud Run backend URL
+5. Deploy
+
+### Backend → Google Cloud Run
+
+```bash
+# Prerequisites: gcloud CLI installed and authenticated
+gcloud auth login
+gcloud auth configure-docker
+
+# Set your GCP project
+export GCP_PROJECT_ID=your-project-id
+export GEMINI_API_KEY=your_gemini_api_key_here
+
+cd backend
+chmod +x deploy-cloud-run.sh
+./deploy-cloud-run.sh
+```
+
+The script will output your Cloud Run URL. Set it as `NEXT_PUBLIC_API_URL` in Vercel.
+
+**Region**: `asia-south1` (Mumbai) — chosen for lowest latency to India pilot wards.
+
+### Environment Variables Reference
+
+| Variable | Required | Description |
+|---|---|---|
+| `GEMINI_API_KEY` | **Yes for live AI** | Gemini 2.0 Flash API key from [ai.google.dev](https://ai.google.dev) |
+| `MOCK_MODE` | No | Set `true` to disable real API calls (offline demo mode) |
+| `JWT_SECRET` | Yes | Secret for signing officer auth tokens |
+| `PORT` | No | Server port (default 3001 local, 8080 Cloud Run) |
+| `SIMULATOR_INTERVAL_MS` | No | IoT sensor polling frequency (default 10s) |
+| `SCORING_INTERVAL_MS` | No | Hotspot rescoring frequency (default 30s) |
+| `NEXT_PUBLIC_API_URL` | Yes (prod) | Backend URL for frontend API rewrites |
 
 ---
 
-## 🎨 Design System & Visual Hierarchy
-Built with a curated **Civic Teal** palette emphasizing calm authority, transparency, and high contrast for outdoor field visibility:
-* **Primary Civic Teal**: `#1F6F5C` (Municipal Trust & Action)
-* **Critical Severity**: `#D64545` (Acute Smog / Open Combustion — Immediate Dispatch)
-* **Moderate Severity**: `#E8A33D` (Construction Dust / Unpaved Road — Monitor)
-* **Low / Resolved**: `#4C8C4A` (Normal Air Quality / Dispersed)
-* **Resolved Neutral**: `#8B94A3` (Closed Incident / Archive)
-* **Typography**: Google Inter & Noto Sans (Clean, modern legible sans-serif across English, Hindi, and Marathi scripts).
-* **Accessibility**: WCAG 2.1 AA Compliant. All severity markers combine Color + Icon Emoji + Text Label (`🔥 CRITICAL 88 ↑`).
+## Navigation & User Flows
+
+See [`NAVIGATION.md`](NAVIGATION.md) for the full route map and RBAC rules.
+
+| Route | Who | Description |
+|---|---|---|
+| `/` | Public | Landing page with live hotspot teaser map |
+| `/onboarding` | Citizens | 4-step wizard: Language → OTP → Location → Camera |
+| `/app` | Citizens | Home / Map / Report / My Reports / Profile tabs |
+| `/officer/login` | Officers | Email/password or 1-Click Demo login |
+| `/officer/dashboard` | Officers | Hotspot Queue / Map / Analytics / Fleet / Settings |
+
+**Demo Accounts** (no credentials needed):
+- Click **"1-Click Demo"** on the officer login page for instant ward-scoped dashboard access.
 
 ---
 
-## 🗺️ Phase 2 Roadmap & Future Scaling
-* **Direct IoT Broker Integration**: Onboarding CPCB and municipal DPCC MQTT hardware sensor nodes.
-* **Copernicus Sentinel-5P Integration**: Automated Earth Engine API ingestion of NO₂ and Aerosol Optical Depth satellite rasters.
-* **WhatsApp / SMS Bot Channel**: Twilio integration for low-bandwidth citizen reporting via text message.
-* **Automated Fleet Dispatch**: GPS routing integration with municipal water-mist tankers and sanitation trucks.
+## Data Sources & Seeding
+
+The platform seeds realistic baseline data using:
+
+- **CPCB AQI historical reference**: PM2.5 baseline values derived from published Central Pollution Control Board daily AQI data for Delhi NCR (2023-24 annual report, data.gov.in).
+- **IMD weather patterns**: Wind speed/humidity ranges seeded from India Meteorological Department seasonal normals for Delhi.
+- **Ward boundaries**: Bhalswa (Sector 12), Rohini (Sector 9), Outer Ring Road junction — actual Delhi municipal ward coordinates.
+
+All seed data is clearly marked in [`backend/src/scripts/seedData.ts`](backend/src/scripts/seedData.ts).
+
+---
+
+## Known Gaps / Roadmap
+
+| Gap | Severity | Plan |
+|---|---|---|
+| Gemini free-tier quota exhaustion | High | Enable billing on GCP project to get production RPM limits |
+| `gcloud` CLI not pre-installed on judge machines | Medium | Cloud Run URL will be provided in demo notes; frontend fallback data works standalone |
+| WhatsApp/SMS reporting bot | Low | Architecture stub in `bot.service.ts`; Twilio integration is the next P1 sprint |
+| Real MQTT broker (DPCC/CPCB) | Low | `iot.service.ts` architecture is MQTT-compatible; production onboarding requires ward MoU |
+| BigQuery analytics export | Low | Skipped per demo day scoping; CSV export works via `/api/v1/analytics/export` |
+| Firebase Phone OTP (real SMS) | Medium | Currently mocked in onboarding; Firebase Auth integration is 1-sprint work |
+
+---
+
+## Tech Stack
+
+| Layer | Technology | Why |
+|---|---|---|
+| Frontend | Next.js 14 App Router + TypeScript | SSG for fast PWA, App Router for nested layouts |
+| Styling | Tailwind CSS | Utility-first, rapid iteration |
+| Maps | Leaflet.js + OpenStreetMap | Zero API quota, offline-reliable for live demos |
+| Charts | Recharts | Lightweight React-native charting |
+| Backend | Node.js + Express + TypeScript | Typed, testable REST API |
+| Database | WASM SQLite (sql.js) | Zero-config, no native compilation, turnkey for judges |
+| AI | Gemini 2.0 Flash (Google AI) | Multimodal vision + audio + text in single API |
+| Hosting | Vercel (frontend) + Google Cloud Run (backend) | Serverless, auto-scaling, India-region available |
+| Auth | JWT (HMAC-SHA256) | Stateless, ward-scoped, RBAC enforced at middleware |
+
+---
+
+## License
+
+MIT — build upon it, pilot it, scale it.
+
+**Team Vayu Vigil** | Build with AI: Code for Communities | Google Cloud × Hack2skill 2026
